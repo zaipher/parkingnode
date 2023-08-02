@@ -64,7 +64,7 @@
       }
 
       .container {
-        width: 95rem;
+        width: 80%;
         margin: 0 auto;
         
       }
@@ -242,6 +242,11 @@ table td,table th {
   text-align: left
 }
 
+table td a {
+  display: block; 
+
+}
+
 table td.l,table th.l {
   text-align: right
 }
@@ -256,10 +261,11 @@ table td.r,table th.r {
 
 .table100-head th {
   font-family: 'Montserrat', sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   color: #fff;
   line-height: 1.2;
-  font-weight: unset
+  font-weight: unset;
+  text-align: center;
 }
 
 tbody tr:nth-child(even) {
@@ -271,7 +277,7 @@ tbody tr {
   font-size: 15px;
   color: gray;
   line-height: 1.2;
-  font-weight: unset
+  font-weight: unset;
 }
 
 tbody tr:hover {
@@ -294,8 +300,8 @@ tbody tr:hover {
 }
 
 .column4 {
-  width: 110px;
-  text-align: left;
+  width: 680px;
+  text-align: center;
     {% comment %} text-align: right  {% endcomment %}
 }
 
@@ -308,6 +314,37 @@ tbody tr:hover {
   width: 222px;
   text-align: right;
   padding-right: 62px
+}
+
+.reservebtn {
+  display: inline-block;
+  background-color: #f63;
+  font-size: 12px;
+  font-weight: 400;
+  color: white;
+  padding: 8px 25px;
+  border-radius: 15px;
+  letter-spacing: 0.25px;
+  border: none;
+  transition: all .3s;
+}
+.reservebtn a i {
+  margin-right: 10px;
+  background-color: white;
+  color: #f63;
+  border-radius: 10%;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 22px;
+  width: 100%;
+  text-align: center;
+  border-color: none;
+}
+
+.reservebtn:hover {
+  background-color: rgba(255, 102, 51, 0.552);
+  color: #fff;
+  border-color: none;
 }
 
     </style>

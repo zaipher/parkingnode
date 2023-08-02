@@ -43,25 +43,10 @@
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
-
+const replaceTemplate = require(`${__dirname}/1-node-farm/modules/replaceTemplate`);
 //SERVER
 
-const replaceTemplate = (temp, product) => {
-    let output = temp.replace(/{%PARKINGLOCATION%}/g, product.parkingLocation);
-    output = output.replace(/{%PARKINGSTATUS%}/g, product.status);
-    output = output.replace(/{%PARKINGPRICE%}/g, product.price);
-    //output = output.replace(/{%PARKINGQTY%}/g, product.quantity);
-    output = output.replace(/{%PARKINGSTART%}/g, product.startDate);
-    output = output.replace(/{%PARKINGEND%}/g, product.endDate);
-    output = output.replace(/{%PARKINGBUILDING%}/g, product.building);
-    //output = output.replace(/{%PARKINGDETAILS%}/g, product.nutrients);
-    //output = output.replace(/{%PARKINGDESC%}/g, product.description);
-    output = output.replace(/{%PARKINGID%}/g, product.parkingId);
 
-    if (!product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
-    return output;
-
-}
 const tempOverview = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-overview.html`, 'utf-8');
 //const tempCard = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-card.html`, 'utf-8');
 const tempTable = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-table.html`, 'utf-8');
@@ -86,7 +71,7 @@ const server = http.createServer((req, res) => {
         //const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
         //const output = tempOverview.replace('{%PARKING_CARDS%}', cardsHtml);
         const cardsHtml = dataObj.map(el => replaceTemplate(tempTable, el)).join('');
-        console.log(cardsHtml);
+        //console.log(cardsHtml);
         const output = tempOverview.replace('{%PARKING_TABLE%}', cardsHtml);
         res.end(output);
     }
