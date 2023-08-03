@@ -20,7 +20,27 @@ const tempProduct = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/
 const data = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
+const dataFile = '1-node-farm/starter/dev-data/data.json';
 
+// Helper function to read the JSON data from the file
+function readDataFile() {
+  try {
+    const jsonData = fs.readFileSync(dataFile);
+    return JSON.parse(jsonData);
+  } catch (error) {
+    console.error('Error reading data file:', error);
+    return [];
+  }
+}
+
+// Helper function to write the JSON data to the file
+function writeDataFile(data) {
+  try {
+    fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Error writing data file:', error);
+  }
+}
 
 // render the home page
 app.get('/', (req, res) => { 
@@ -198,6 +218,117 @@ app.post('/api/v1/parkings', (req, res) => {
     });
 });
 
+
+// app.patch('/api/v1/parkings/:parkingId', (req, res) => {
+    
+//     const newValue = req.body.value;
+//       // Find the data item with the given id
+//     const parking = parkings.find(parking => parking.parkingId === req.params.parkingId);
+
+//   if (!parking) {
+//     // If the item with the given id is not found, return 404 Not Found
+//     return res.status(404).json({ message: 'Data not found' });
+//   }
+//   // Update the value
+//   parking.value = newValue;
+//   console.log(newValue);
+//   console.log(parking.value);
+
+//   // Return 200 OK to indicate successful update
+// //   res.status(200).json({ message: 'Value updated successfully', parkings: parking });
+//   fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
+//     res.status(201).json({
+//         status:'success',
+//         data: {
+//             parkings: parking.value
+//         },
+//     });
+// }
+// )
+// });
+// app.patch('/api/v1/parkings/:parkingId', (req, res) => {
+//     // const lastParkingId = parkings[parkings.length - 1].parkingId;
+//     // const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
+//     // console.log(newparkingId);
+//     const parkingId = req.params.parkingId;
+//     console.log(parkingId);
+//     const newValue = req.body;
+//     console.log(newValue);
+  
+//     let parkings = readDataFile();
+
+//     // Find the data item with the given id
+//     const itemToUpdate = parkings.find(item => item.parkingId === parkingId);
+    
+//     //console.log(itemToUpdate);
+  
+//     if (!itemToUpdate) {
+//       // If the item with the given id is not found, return 404 Not Found
+//       return res.status(404).json({ message: 'Data not found' });
+//     }
+  
+//     // Update the value
+//     itemToUpdate.value = newValue;
+//     //console.log(itemToUpdate.value);
+  
+//     // Save the updated data back to the file
+//     writeDataFile(parkings);
+  
+//     // Return 200 OK to indicate successful update
+//     res.status(200).json({ message: 'Value updated successfully', parkings: itemToUpdate });
+//   });
+
+
+
+app.patch('/api/v1/parkings/:parkingId', (req, res) => {
+    let id = req.params.parkingId // Get the id from the request params
+    const pId = Number(id.slice(4)); // Number of the parking ID 
+    const parkingId = `PID-${Number(id.slice(4))}`; // Concatenate the PID with the parking ID
+    console.log(pId);
+
+    let parkingToUpdate = parkings.find(item => item.parkingId === id); // Find the data item with the given id
+    let index = parkings.indexOf(parkingToUpdate); // Find the index of the data item with the given id
+
+    const newparking = Object.assign(parkings[index], req.body, {lastUpdate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
+    console.log(newparking); // Display the new parking object
+
+    parkings[index].parkingId = id;
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
+        // if(!parkingId) {
+        //     if (err) {
+        //     res.status(500).json({
+        //         status: 'error',
+        //         message: 'Failed to save parking data.',
+        //     });
+        // }
+        // else {
+            res.status(201).json({
+            status:'success',
+            results: parkings.length,
+            data: {
+                parkings: parkingToUpdate
+            },
+        });
+    });
+});
+
+
+
+//     //if(req.params.parkingId * 1 > parkings.length) {
+//     if (err) {
+//         res.status(404),json({
+//             status: 'error',
+//             message: 'Failed to save parking data.',
+//         });
+//     }
+//     res.status(200).json({
+//         status:'success',
+//                 results: parkings.length,
+//                 data: {
+//                     parkings: '<Updated parking data>'
+//                 }
+//  });
+// });
 
 const port = 3000;
 app.listen(port, () => {
