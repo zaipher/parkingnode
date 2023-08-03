@@ -1,103 +1,205 @@
-// // 1 Reading and Writing files / Synchronous / Blocking model
-// const fs = require('fs');
-// const input = fs.readFileSync('1-node-farm/starter/txt/input.txt', 'utf-8');
-// console.log(input)
-
-// const output = `Some description about avocado ${input}. \nCreated by ${Date.now()}`
-// fs.writeFileSync('1-node-farm/starter/txt/output.txt', output)
-// console.log('Message was written')
-// // ==========
-
-// // Asynchronous non-blocking way to read file
-// const fs = require('fs');
-// fs.readFile('./1-node-farm/starter/txt/start.txt', 'utf-8', (err, data1) => {
-//     fs.readFile(`./1-node-farm/starter/txt/${data1}.txt`, 'utf-8', (err, data2) => {
-//         console.log(data2)
-//     });
-// });
-// console.log('Will read file');
-
-// // // ==========
-
-// Readind and writing files in Async
-// const fs = require('fs');
-// fs.readFile('./1-node-farm/starter/txt/start1.txt', 'utf-8', (err, data1) => {
-//     if (err) return console.log("ERROR: file cannot found")
-//     fs.readFile(`./1-node-farm/starter/txt/${data1}.txt`, 'utf-8', (err, data2) => {
-//         console.log(data2);
-//         fs.readFile(`./1-node-farm/starter/txt/append.txt`, 'utf-8', (err, data3) => {
-//             console.log(data3);
-
-//             fs.writeFile(`./1-node-farm/starter/txt/final.txt`, `${data2}\n${data3}`, 'utf-8', err => {
-//                 console.log('Your file has been writtern!');
-//             });
-//         });
-//     });
-// });
-// console.log('Will read file');
-
-////////////////////////////////////////////
-// Building simple web server
-///////
 // FILE
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
+const express = require('express');
+const slugify = require('slugify');
+const { toUnicode } = require('punycode');
 const replaceTemplate = require(`${__dirname}/1-node-farm/modules/replaceTemplate`);
 //SERVER
 
+const app = express();
+app.use(express.json()); // to support JSON-encoded bodies as middleware
 
+Date.prototype.toJSON = function () {
+    return this.getTime()
+   }
 const tempOverview = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-overview.html`, 'utf-8');
-//const tempCard = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-card.html`, 'utf-8');
 const tempTable = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-table.html`, 'utf-8');
 const tempProduct = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-product.html`, 'utf-8');
 const data = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
-const server = http.createServer((req, res) => {
 
-    const path = req.url;
-    // console.log(req.url);
-    // console.log(url.parse(req.url, true));
-    const { query, pathname } = url.parse(req.url, true);
-    // url.parse(req.url, true);
-    // const path = req.url;
 
-    // Overview Page
-    if (pathname === '/' || pathname === '/overview') {
-        res.writeHead(200, { 'Content-type': 'text/html' });
-
-        //TempCard
-        //const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
-        //const output = tempOverview.replace('{%PARKING_CARDS%}', cardsHtml);
-        const cardsHtml = dataObj.map(el => replaceTemplate(tempTable, el)).join('');
-        //console.log(cardsHtml);
-        const output = tempOverview.replace('{%PARKING_TABLE%}', cardsHtml);
-        res.end(output);
-    }
-
-    // Product page
-    else if (pathname === '/product') {
-        res.writeHead(200, { 'Content-type': 'text/html' });
-        const product = dataObj[query.id];
-        const output = replaceTemplate(tempProduct, product);
-        res.end(output);
-        //res.end('This is the Product');
-    }
-
-    // API
-    else if (pathname === '/api') {
-        res.writeHead(200, { 'Content-type': 'application/json' });
-        res.end(data);
-    }
-    else {
-        res.writeHead(404, {
-            'Context-type': 'text/html',
-            'My-header': 'smartparking'
-        });
-        res.end('<h1>Page not found!</h1>');
-    }
+// render the home page
+app.get('/', (req, res) => { 
+    res
+    .status(200)
+    .json({message: 'Hello from the server side!', data: data, app: 'Smart Parking'});
 });
-server.listen(8000, '127.0.0.1', () => {
-    console.log('Listening to requests on port 8000')
+
+// get the parkings from the data.json file
+const parkings = JSON.parse( 
+    fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/data.json`)
+);
+const tours = JSON.parse( 
+    fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/tours-simple.json`)
+);
+
+// get all the parkings from the data.json file
+app.get('/api/v1/parkings', (req, res) => { 
+    res.status(200).json({
+        status: 'success',
+        results: parkings.length,
+        data: {
+            parkings
+        }
+    });
+});
+
+// get all the parkings from the data.json file with parameters
+app.get('/api/v1/parkings/:parkingId', (req, res) => { 
+    console.log(req.params);
+
+    const parking = parkings.find(parking => parking.parkingId === req.params.parkingId);
+    if (!parking) {
+        return res.status(404).json({
+        status: 'error',
+        message: 'Parking not found'
+        });
+    }
+    res.status(200).json({
+        status: 'success',
+        data: {
+                parking
+        }
+    });
+});
+
+// TODO: this
+// app.get('/api/v1/parkings/status?', (req, res) => { 
+//     console.log(req.params);
+
+//     const parkingstatus = parkings.find(el => el.status === req.params.status);
+//     res.status(200).json({
+//         status: 'success',
+//         data: {
+//                 parkingstatus
+//         }
+//     });
+// });
+
+app.get('/api/v1/tours', (req, res) => { 
+    res.status(200).json({
+        status: 'success',
+        results: tours.length,
+        data: {
+            tours
+        }
+    });
+});
+// console.log(parkings.length-1);
+
+// const newparkingId = parkings.length;
+// console.log(newparkingId);
+// console.log(parkings[newparkingId])
+
+// const result1 = num.toString().slice(2);
+// console.log(result1);
+
+// const slideparkingId = newparkingId.slice(4);
+// console.log(slideparkingId);
+
+//const newparkingId = parkings[parkings.length - 1].parkingid + 1;
+
+// const parkingId = "PID-10001"
+// const result1 = Number(parkingId.slice(4))+1;
+// //console.log(Number(result1)+1);
+// console.log(result1);
+
+// const parkingId = parkings[parkings.length - 1];
+// let id = parkingId.parkingId;
+// id = Number(id.slice(4))+1;
+// const parkingID = "PID-"
+// const newparkingId = parkingID.concat(id);
+// console.log(newparkingId);
+//newparkingId = Number(parkingId.slice(4))+1;
+
+//2
+// const parkingId = parkings[parkings.length - 1];
+//     const newparkingId = parkingId.parkingId;
+
+// 3
+// const parkingID = "PID-"
+// const id = 100001
+// const newparkingId = "PID".concat(id);
+// console.log(newparkingId);
+
+
+//4
+// const lastParkingId = parkings[parkings.length - 1].parkingId;
+// const newId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
+// console.log(newId);
+// console.log(parkings)
+
+//Date test
+// Date.prototype.toJSON = function () {
+//     return this.getTime()
+//    }
+//    const user = {
+//      name: 'Joe',
+//      updated: new Date()
+//    }
+// console.log(user);
+
+app.post('/api/v1/tours', (req, res) => { 
+    const newId = tours[tours.length - 1].id + 1;
+    const newTour = Object.assign({ id:newId }, req.body);
+
+    tours.push(newTour);
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/tours-simple.json`, JSON.stringify(tours), err => {
+        res.status(201).json({
+            status:'success',
+            results: tours.length,
+            data: {
+                tours: newTour
+            },
+        });
+    }
+)
+});
+
+app.post('/api/v1/parkings', (req, res) => { 
+    //console.log(req.body);
+    // TEST 3
+    // const parkingId = parkings[parkings.length - 1];
+    // const unslicedparkingId = parkingId.parkingId;
+    // const id = Number(unslicedparkingId.slice(4))+1;
+    // const newparkingId = "PID-".concat(id);
+    // console.log(newparkingId);
+
+    // TEST 4 Get the last parking id from the database and increment it by 1 
+    const lastParkingId = parkings[parkings.length - 1].parkingId;
+    const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
+    console.log(newparkingId);
+
+    // const newparkingId = parkings[parkings.length - 1];
+    // console.log(newparkingId);
+    const newparking = Object.assign({ parkingId:newparkingId }, req.body, {created:new Date()});
+    console.log(newparking);
+    parkings.push(newparking);
+    //console.log(parkinds);
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
+        if (err) {
+            res.status(500),json({
+                status: 'error',
+                message: 'Failed to save parking data.',
+            });
+        } else {
+            res.status(201).json({
+            status:'success',
+            results: newparking.length,
+            data: {
+                parkings: newparking
+            },
+        });
+    }
+    });
+});
+
+
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });

@@ -64,7 +64,7 @@
       }
 
       .container {
-        width: 80%;
+        width: 85%;
         margin: 0 auto;
         
       }
@@ -286,9 +286,27 @@ tbody tr:hover {
   cursor: pointer
 }
 
+td {
+  border: 2px solid #f3f6f4;
+  position: relative;
+}
+
+td > a:first-child {
+  display: flex;
+  padding: 18px;
+  text-decoration: none;
+  color: inherit;
+  z-index: 0;
+
+  &:focus {
+    outline: 10;
+  }
+}
+
+
 .column1 {
   width: 120px;
-  padding-left: 40px
+  padding-left: 30px
 }
 
 .column2 {
@@ -296,11 +314,11 @@ tbody tr:hover {
 }
 
 .column3 {
-  width: 145px
+  width: 245px
 }
 
 .column4 {
-  width: 680px;
+  width: 600px;
   text-align: center;
     {% comment %} text-align: right  {% endcomment %}
 }
@@ -367,7 +385,7 @@ tbody tr:hover {
               <th class="column4">End Date/Time</th>  
               <th class="column5">Price</th>
               <th class="column5">Status</th>
-              <th class="column6">Reserve</th>
+              <th class="column4">Reserve</th>
               </tr>
               </thead>
               <tbody>
