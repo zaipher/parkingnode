@@ -312,8 +312,6 @@ app.patch('/api/v1/parkings/:parkingId', (req, res) => {
     });
 });
 
-
-
 //     //if(req.params.parkingId * 1 > parkings.length) {
 //     if (err) {
 //         res.status(404),json({
