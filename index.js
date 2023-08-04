@@ -24,21 +24,25 @@ Date.prototype.toJSON = function () {
 const tempOverview = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-overview.html`, 'utf-8');
 const tempTable = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-table.html`, 'utf-8');
 const tempProduct = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-product.html`, 'utf-8');
-const data = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/data.json`, 'utf-8');
-const dataObj = JSON.parse(data);
+const parkingsdata = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, 'utf-8');
+const usersdata = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/users.json`, 'utf-8');
+const dataObj = JSON.parse(parkingsdata);
 
-const dataFile = '1-node-farm/starter/dev-data/data.json';
+//const dataFile = '1-node-farm/starter/dev-data/parkings.json';
 
 // render the home page
 app.get('/', (req, res) => { 
     res
     .status(200)
-    .json({message: 'Hello from the server side!', data: data, app: 'Smart Parking'});
+    .json({message: 'Hello from the server side!', data: parkingsdata, app: 'Smart Parking'});
 });
 
-// get the parkings from the data.json file
+// get the parkings from theparkings.json file
 const parkings = JSON.parse( 
-    fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/data.json`)
+    fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`)
+);
+const users = JSON.parse( 
+    fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/users.json`)
 );
 const tours = JSON.parse( 
     fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/tours-simple.json`)
@@ -74,12 +78,12 @@ const getParking = (req, res) => {
     });
 };
 
-const createParking = (req, res) => { 
+const addParking = (req, res) => { 
     const lastParkingId = parkings[parkings.length - 1].parkingId;
     const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
-    const newparking = Object.assign({ parkingId:newparkingId }, req.body, {created:new Date()});
+    const newparking = Object.assign({ parkingId:newparkingId }, req.body, {createdDate:new Date()});
     parkings.push(newparking);
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, JSON.stringify(parkings), err => {
         if (err) {
             res.status(500),json({
                 status: 'error',
@@ -108,7 +112,7 @@ const updateParking = (req, res) => {
     let index = parkings.indexOf(parkingToUpdate); // Find the index of the data item with the given id
 
     const newparking = Object.assign(parkings[index], req.body, {lastUpdate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, JSON.stringify(parkings), err => {
         // if(!parkingId) {
         //     if (err) {
         //     res.status(500).json({
@@ -142,7 +146,7 @@ const deleteParking = (req, res) => {
     //console.log(newparking); // Display the new parking object
 
     //parkings[index].parkingId = id;
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, JSON.stringify(parkings), err => {
         // if(!parkingId) {
         //     if (err) {
         //     res.status(500).json({
@@ -160,13 +164,69 @@ const deleteParking = (req, res) => {
     });
 }
 
-// // get all the parkings from the data.json file
+const getAllUsers = (req, res) => { 
+    res.status(200).json({
+        status:'success',
+        requestedAt: req.requestTime,
+        results: users.length,
+        data: {
+            users
+        }
+    });
+};
+
+const getUser = (req, res) => { 
+    console.log(req.params);
+    const user = users.find(user => user.userId === req.params.userId);
+    if (!user) {
+        return res.status(404).json({
+        status: 'error',
+        message: 'User not found'
+        });
+    }
+    res.status(200).json({
+        status: 'success',
+        requestedAt: req.requestTime,
+        data: {
+                user
+        }
+    });
+};
+
+const addUser = (req, res) => { 
+    const lastUserId = users[users.length - 1].userId;
+    // TODO: Add condition to check if the user is a parking owner or a customer
+    //const userType = users.find(user => user.userId === req.params.userId);
+
+    const newuserId = `PO-${Number(lastUserId.slice(3)) + 1}`;
+    //console.log(newuserId);
+    const newuser = Object.assign({ userId:newuserId }, req.body, {createdDate:new Date()});
+    users.push(newuser);
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/users.json`, JSON.stringify(users), err => {
+        if (err) {
+            res.status(500),json({
+                status: 'error',
+                message: 'Failed to add new user.',
+            });
+        } else {
+            res.status(201).json({
+            status:'success',
+            requestedAt: req.requestTime,
+            results: newuser.length,
+            data: {
+                users: newuser
+            },
+        });
+    }
+    });
+};
+// // get all the parkings from theparkings.json file
 // app.get('/api/v1/parkings', getAllParkings);
-// // get specific parking from the data.json file
+// // get specific parking from theparkings.json file
 // app.get('/api/v1/parkings/:parkingId', getParking);
 // create a new parking
-// app.post('/api/v1/parkings', createParking);
-// // update a specific parking in the data.json file
+// app.post('/api/v1/parkings', addParking);
+// // update a specific parking in theparkings.json file
 // app.patch('/api/v1/parkings/:parkingId', updateParking);
 //app.delete('/api/v1/parkings/:parkingId', deleteParking);
 
@@ -178,19 +238,19 @@ const userRouter = express.Router();
 
 parkingRouter.route('/')
     .get(getAllParkings)
-    .post(createParking);
+    .post(addParking);
 
 parkingRouter.route('/:parkingId')
     .get(getParking)
     .patch(updateParking)
     .delete(deleteParking);
 
-// userRouter.route('/')
-//     .get(getAllUsers)
-//     .post(createUser);
+userRouter.route('/')
+    .get(getAllUsers)
+    .post(addUser);
 
-// userRouter.route('/:userId')
-//     .get(getUser)
+userRouter.route('/:userId')
+     .get(getUser);
 //     .patch(updateUser)
 //     .delete(deleteUser);
 
