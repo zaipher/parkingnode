@@ -3,6 +3,7 @@ const fs = require('fs');
 const http = require('http');
 const url = require('url');
 const express = require('express');
+const morgan = require('morgan');
 const replaceTemplate = require(`${__dirname}/1-node-farm/modules/replaceTemplate`);
 
 //Middlware
@@ -13,6 +14,8 @@ app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     next();
 });
+app.use(morgan('dev'));
+
 
 Date.prototype.toJSON = function () {
     return this.getTime()
@@ -99,7 +102,7 @@ const updateParking = (req, res) => {
     let id = req.params.parkingId // Get the id from the request params
     const pId = Number(id.slice(4)); // Number of the parking ID 
     const parkingId = `PID-${Number(id.slice(4))}`; // Concatenate the PID with the parking ID
-    console.log(pId);
+    //console.log(pId); TODO:
 
     let parkingToUpdate = parkings.find(item => item.parkingId === id); // Find the data item with the given id
     let index = parkings.indexOf(parkingToUpdate); // Find the index of the data item with the given id
@@ -168,15 +171,31 @@ const deleteParking = (req, res) => {
 //app.delete('/api/v1/parkings/:parkingId', deleteParking);
 
 // Routes
-app.route('/api/v1/parkings')
+
+
+const parkingRouter = express.Router();
+const userRouter = express.Router();
+
+parkingRouter.route('/')
     .get(getAllParkings)
     .post(createParking);
 
-app.route('/api/v1/parkings/:parkingId')
+parkingRouter.route('/:parkingId')
     .get(getParking)
     .patch(updateParking)
     .delete(deleteParking);
 
+// userRouter.route('/')
+//     .get(getAllUsers)
+//     .post(createUser);
+
+// userRouter.route('/:userId')
+//     .get(getUser)
+//     .patch(updateUser)
+//     .delete(deleteUser);
+
+app.use('/api/v1/parkings', parkingRouter);
+app.use('/api/v1/users', userRouter);
 // Start the server
 const port = 3000;
 app.listen(port, () => {
