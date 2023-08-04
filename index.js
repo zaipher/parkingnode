@@ -4,9 +4,15 @@ const http = require('http');
 const url = require('url');
 const express = require('express');
 const replaceTemplate = require(`${__dirname}/1-node-farm/modules/replaceTemplate`);
-//SERVER
+
+//Middlware
 const app = express();
 app.use(express.json()); // to support JSON-encoded bodies as middleware
+app.use((req, res, next) => {
+    console.log('Logging time of execution');
+    req.requestTime = new Date().toISOString();
+    next();
+});
 
 Date.prototype.toJSON = function () {
     return this.getTime()
@@ -35,9 +41,11 @@ const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/tours-simple.json`)
 );
 
+// Route handlers for the parkings
 const getAllParkings = (req, res) => { 
     res.status(200).json({
         status:'success',
+        requestedAt: req.requestTime,
         results: parkings.length,
         data: {
             parkings
@@ -56,6 +64,7 @@ const getParking = (req, res) => {
     }
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         data: {
                 parking
         }
@@ -65,8 +74,6 @@ const getParking = (req, res) => {
 const createParking = (req, res) => { 
     const lastParkingId = parkings[parkings.length - 1].parkingId;
     const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
-    console.log(newparkingId);
-
     const newparking = Object.assign({ parkingId:newparkingId }, req.body, {created:new Date()});
     parkings.push(newparking);
     fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
@@ -78,6 +85,7 @@ const createParking = (req, res) => {
         } else {
             res.status(201).json({
             status:'success',
+            requestedAt: req.requestTime,
             results: newparking.length,
             data: {
                 parkings: newparking
@@ -108,6 +116,7 @@ const updateParking = (req, res) => {
         // else {
             res.status(201).json({
             status:'success',
+            requestedAt: req.requestTime,
             results: parkings.length,
             data: {
                 parkings: parkingToUpdate
@@ -141,6 +150,7 @@ const deleteParking = (req, res) => {
         // else {
             res.status(204).json({
             status:'success',
+            requestedAt: req.requestTime,
             results: parkings.length,
             data: null
         });
@@ -157,6 +167,7 @@ const deleteParking = (req, res) => {
 // app.patch('/api/v1/parkings/:parkingId', updateParking);
 //app.delete('/api/v1/parkings/:parkingId', deleteParking);
 
+// Routes
 app.route('/api/v1/parkings')
     .get(getAllParkings)
     .post(createParking);
@@ -166,6 +177,7 @@ app.route('/api/v1/parkings/:parkingId')
     .patch(updateParking)
     .delete(deleteParking);
 
+// Start the server
 const port = 3000;
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
