@@ -3,8 +3,6 @@ const fs = require('fs');
 const http = require('http');
 const url = require('url');
 const express = require('express');
-//const slugify = require('slugify');
-//const { toUnicode } = require('punycode');
 const replaceTemplate = require(`${__dirname}/1-node-farm/modules/replaceTemplate`);
 //SERVER
 const app = express();
@@ -21,26 +19,6 @@ const data = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/data.jso
 const dataObj = JSON.parse(data);
 
 const dataFile = '1-node-farm/starter/dev-data/data.json';
-
-// Helper function to read the JSON data from the file
-function readDataFile() {
-  try {
-    const jsonData = fs.readFileSync(dataFile);
-    return JSON.parse(jsonData);
-  } catch (error) {
-    console.error('Error reading data file:', error);
-    return [];
-  }
-}
-
-// Helper function to write the JSON data to the file
-function writeDataFile(data) {
-  try {
-    fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
-  } catch (error) {
-    console.error('Error writing data file:', error);
-  }
-}
 
 // render the home page
 app.get('/', (req, res) => { 
@@ -85,15 +63,12 @@ const getParking = (req, res) => {
 };
 
 const createParking = (req, res) => { 
-    // TEST 4 Get the last parking id from the database and increment it by 1 
     const lastParkingId = parkings[parkings.length - 1].parkingId;
     const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
     console.log(newparkingId);
 
     const newparking = Object.assign({ parkingId:newparkingId }, req.body, {created:new Date()});
-    //console.log(newparking);
     parkings.push(newparking);
-    //console.log(parkinds);
     fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/data.json`, JSON.stringify(parkings), err => {
         if (err) {
             res.status(500),json({
@@ -190,7 +165,6 @@ app.route('/api/v1/parkings/:parkingId')
     .get(getParking)
     .patch(updateParking)
     .delete(deleteParking);
-
 
 const port = 3000;
 app.listen(port, () => {
