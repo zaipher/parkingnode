@@ -31,6 +31,7 @@ const dataObj = JSON.parse(parkingsdata);
 //const dataFile = '1-node-farm/starter/dev-data/parkings.json';
 
 // render the home page
+// TODO: review this as data may be insecured
 app.get('/', (req, res) => { 
     res
     .status(200)
@@ -126,7 +127,7 @@ const updateParking = (req, res) => {
             requestedAt: req.requestTime,
             results: parkings.length,
             data: {
-                parkings: parkingToUpdate
+                parkings: newparking
             },
         });
     });
@@ -220,6 +221,36 @@ const addUser = (req, res) => {
     }
     });
 };
+
+const updateUser = (req, res) => {
+    let id = req.params.userId // Get the id from the request params
+    const uId = Number(id.slice(3)); // Number of the parking ID 
+    const userId = `PO-${Number(id.slice(3))}`; // Concatenate the PID with the parking ID
+    //console.log(uId); TODO:
+
+    let userToUpdate = users.find(item => item.userId === id); // Find the data item with the given id
+    let userindex = users.indexOf(userToUpdate); // Find the index of the data item with the given id
+
+    const newuserdata = Object.assign(users[userindex], req.body, {lastUpdate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
+    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/users.json`, JSON.stringify(users), err => {
+        // if(!parkingId) {
+        //     if (err) {
+        //     res.status(500).json({
+        //         status: 'error',
+        //         message: 'Failed to save parking data.',
+        //     });
+        // }
+        // else {
+            res.status(201).json({
+            status:'success',
+            requestedAt: req.requestTime,
+            results: users.length,
+            data: {
+                users: newuserdata
+            },
+        });
+    });
+}
 // // get all the parkings from theparkings.json file
 // app.get('/api/v1/parkings', getAllParkings);
 // // get specific parking from theparkings.json file
@@ -250,8 +281,8 @@ userRouter.route('/')
     .post(addUser);
 
 userRouter.route('/:userId')
-     .get(getUser);
-//     .patch(updateUser)
+    .get(getUser)
+    .patch(updateUser);
 //     .delete(deleteUser);
 
 app.use('/api/v1/parkings', parkingRouter);
