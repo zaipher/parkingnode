@@ -4,7 +4,7 @@ const http = require('http');
 const url = require('url');
 const express = require('express');
 const morgan = require('morgan');
-const replaceTemplate = require(`${__dirname}/1-node-farm/modules/replaceTemplate`);
+const replaceTemplate = require(`${__dirname}/modules/replaceTemplate`);
 //const AWS = require('aws-sdk');
 
 const parkingRouter = require(`${__dirname}/routes/parkingRoutes.js`);
@@ -27,8 +27,8 @@ Date.prototype.toJSON = function () {
 const tempOverview = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-overview.html`, 'utf-8');
 const tempTable = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-table.html`, 'utf-8');
 const tempProduct = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-product.html`, 'utf-8');
-const parkingsdata = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, 'utf-8');
-const usersdata = fs.readFileSync(`${__dirname}/1-node-farm/starter/dev-data/users.json`, 'utf-8');
+const parkingsdata = fs.readFileSync(`${__dirname}/dev-data/parkings.json`, 'utf-8');
+const usersdata = fs.readFileSync(`${__dirname}/dev-data/users.json`, 'utf-8');
 const dataObj = JSON.parse(parkingsdata);
 
 // TODO: review this as data may be insecured

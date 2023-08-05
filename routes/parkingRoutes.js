@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router();
 
 const parkings = JSON.parse( 
-    fs.readFileSync(`${__dirname}/../1-node-farm/starter/dev-data/parkings.json`)
+    fs.readFileSync(`${__dirname}/../dev-data/parkings.json`)
 );
 // Route handlers for the parkings
 const getAllParkings = (req, res) => { 
@@ -63,7 +63,7 @@ const addParking = (req, res) => {
     const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
     const newparking = Object.assign({ parkingId:newparkingId }, req.body, {createdDate:new Date()});
     parkings.push(newparking);
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, JSON.stringify(parkings), err => {
+    fs.writeFile(`${__dirname}/dev-data/parkings.json`, JSON.stringify(parkings), err => {
         if (err) {
             res.status(500),json({
                 status: 'error',
@@ -92,7 +92,7 @@ const updateParking = (req, res) => {
     let index = parkings.indexOf(parkingToUpdate); // Find the index of the data item with the given id
 
     const newparking = Object.assign(parkings[index], req.body, {lastUpdate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, JSON.stringify(parkings), err => {
+    fs.writeFile(`${__dirname}/dev-data/parkings.json`, JSON.stringify(parkings), err => {
         // if(!parkingId) {
         //     if (err) {
         //     res.status(500).json({
@@ -126,7 +126,7 @@ const deleteParking = (req, res) => {
     //console.log(newparking); // Display the new parking object
 
     //parkings[index].parkingId = id;
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/parkings.json`, JSON.stringify(parkings), err => {
+    fs.writeFile(`${__dirname}/dev-data/parkings.json`, JSON.stringify(parkings), err => {
         // if(!parkingId) {
         //     if (err) {
         //     res.status(500).json({

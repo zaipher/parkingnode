@@ -2,7 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const users = JSON.parse( 
-    fs.readFileSync(`${__dirname}/../1-node-farm/starter/dev-data/users.json`)
+    fs.readFileSync(`${__dirname}/../dev-data/users.json`)
 );
 const getAllUsers = (req, res) => { 
     res.status(200).json({
@@ -42,9 +42,9 @@ const addUser = (req, res) => {
     //console.log(newuserId);
     const newuser = Object.assign({ userId:newuserId }, req.body, {createdDate:new Date()});
     users.push(newuser);
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/users.json`, JSON.stringify(users), err => {
+    fs.writeFile(`${__dirname}/../dev-data/users.json`, JSON.stringify(users), err => {
         if (err) {
-            res.status(500),json({
+            res.status(500).json({
                 status: 'error',
                 message: 'Failed to add new user.',
             });
@@ -71,7 +71,7 @@ const updateUser = (req, res) => {
     let userindex = users.indexOf(userToUpdate); // Find the index of the data item with the given id
 
     const newuserdata = Object.assign(users[userindex], req.body, {lastUpdate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
-    fs.writeFile(`${__dirname}/1-node-farm/starter/dev-data/users.json`, JSON.stringify(users), err => {
+    fs.writeFile(`${__dirname}/../dev-data/users.json`, JSON.stringify(users), err => {
         TODO:// if(!parkingId) {
         //     if (err) {
         //     res.status(500).json({
