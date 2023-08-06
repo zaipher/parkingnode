@@ -9,6 +9,7 @@ const morgan = require('morgan');
 
 const parkingRouter = require(`${__dirname}/routes/parkingRoutes.js`);
 const userRouter = require(`${__dirname}/routes/userRoutes.js`);
+const customerRouter = require(`${__dirname}/routes/customerRoutes.js`);
 
 //Middlware
 const app = express();
@@ -24,9 +25,9 @@ Date.prototype.toJSON = function () {
     return this.getTime()
    }
 
-const parkingsdata = fs.readFileSync(`${__dirname}/dev-data/parkings.json`, 'utf-8');
-const usersdata = fs.readFileSync(`${__dirname}/dev-data/users.json`, 'utf-8');
-const dataObj = JSON.parse(parkingsdata);
+// const parkingsdata = fs.readFileSync(`${__dirname}/dev-data/parkings.json`, 'utf-8');
+// const usersdata = fs.readFileSync(`${__dirname}/dev-data/users.json`, 'utf-8');
+// const dataObj = JSON.parse(parkingsdata);
 
 // TODO: review this as data may be insecured
 app.get('/', (req, res) => { 
@@ -36,8 +37,9 @@ app.get('/', (req, res) => {
 });
 
 // Routes
-app.use('/api/v1/parkings', parkingRouter);
-app.use('/api/v1/users', userRouter);
+app.use('/api/v1/parking', parkingRouter);
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/customer', customerRouter);
 
 module.exports = app;
 

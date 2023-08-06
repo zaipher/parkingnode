@@ -2,6 +2,11 @@ const fs = require('fs');
 const parkings = JSON.parse( 
     fs.readFileSync(`${__dirname}/../dev-data/parkings.json`)
 );
+
+Date.prototype.toJSON = function () {
+    return this.getTime()
+   }
+
 // Route handlers for the parkings
 exports.getAllParkings = (req, res) => { 
     res.status(200).json({
@@ -35,12 +40,19 @@ exports.getParking = (req, res) => {
 
 exports.addParking = (req, res) => { 
     const lastParkingId = parkings[parkings.length - 1].parkingId;
+    console.log(lastParkingId);
     const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
-    const newparking = Object.assign({ parkingId:newparkingId }, req.body, {createdDate:new Date()});
+    console.log(newparkingId);
+    const newparking = Object.assign(
+        { parkingId:newparkingId }, 
+        req.body, 
+        {createdDate:new Date()}
+        );
     parkings.push(newparking);
-    fs.writeFile(`${__dirname}/dev-data/parkings.json`, JSON.stringify(parkings), err => {
+    //console.log(parkings);
+    fs.writeFile(`${__dirname}/../dev-data/parkings.json`, JSON.stringify(parkings), err => {
         if (err) {
-            res.status(500),json({
+            res.status(500).json({
                 status: 'error',
                 message: 'Failed to save parking data.',
             });
@@ -80,7 +92,9 @@ exports.updateParking = (req, res) => {
             });
         } 
     const parkingToUpdate = Object.assign(parkings[index], req.body, {lastUpdate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
-    fs.writeFile(`${__dirname}/dev-data/parkings.json`, JSON.stringify(parkings), err => {
+    console.log(parking);
+    console.log(parkingToUpdate);
+    fs.writeFile(`${__dirname}/../dev-data/parkings.json`, JSON.stringify(parkings), err => {
             res.status(201).json({
             status:'success',
             requestedAt: req.requestTime,
@@ -116,7 +130,7 @@ exports.deleteParking = (req, res) =>     {
         } 
 
     const parkindToDelete = Object.assign(parkings[index], req.body, {status:"deleted"}, {deletedDate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
-    fs.writeFile(`${__dirname}/dev-data/parkings.json`, JSON.stringify(parkings), err => {
+    fs.writeFile(`${__dirname}/../dev-data/parkings.json`, JSON.stringify(parkings), err => {
             res.status(204).json({
             status:'success',
             requestedAt: req.requestTime,

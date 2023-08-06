@@ -2,6 +2,10 @@ const fs = require('fs');
 const users = JSON.parse( 
     fs.readFileSync(`${__dirname}/../dev-data/users.json`)
 );
+Date.prototype.toJSON = function () {
+    return this.getTime()
+   }
+
 exports.getAllUsers = (req, res) => { 
     res.status(200).json({
         status:'success',
@@ -33,12 +37,15 @@ exports.getUser = (req, res) => {
 
 exports.addUser = (req, res) => { 
     const lastUserId = users[users.length - 1].userId;
-    // TODO: Add condition to check if the user is a parking owner or a customer
-    //const userType = users.find(user => user.userId === req.params.userId);
-
     const newuserId = `PO-${Number(lastUserId.slice(3)) + 1}`;
-    //console.log(newuserId);
-    const newuser = Object.assign({ userId:newuserId }, req.body, {createdDate:new Date()});
+    const newuser = Object.assign(
+        { userId:newuserId}, 
+        req.body,
+        {type:"owner"},
+        {status:"new"},
+        {verified:false},
+        {createdDate:new Date()}
+        );
     users.push(newuser);
     fs.writeFile(`${__dirname}/../dev-data/users.json`, JSON.stringify(users), err => {
         if (err) {
