@@ -24,9 +24,6 @@ Date.prototype.toJSON = function () {
     return this.getTime()
    }
 
-// const tempOverview = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-overview.html`, 'utf-8');
-// const tempTable = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-table.html`, 'utf-8');
-// const tempProduct = fs.readFileSync(`${__dirname}/1-node-farm/starter/templates/template-product.html`, 'utf-8');
 const parkingsdata = fs.readFileSync(`${__dirname}/dev-data/parkings.json`, 'utf-8');
 const usersdata = fs.readFileSync(`${__dirname}/dev-data/users.json`, 'utf-8');
 const dataObj = JSON.parse(parkingsdata);
@@ -42,9 +39,5 @@ app.get('/', (req, res) => {
 app.use('/api/v1/parkings', parkingRouter);
 app.use('/api/v1/users', userRouter);
 
+module.exports = app;
 
-// Start the server
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
