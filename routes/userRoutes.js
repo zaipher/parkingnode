@@ -9,7 +9,7 @@ router.route('/')
 
 router.route('/:userId')
     .get(getUser)
-    .patch(updateUser);
-//     .delete(deleteUser);
+    .patch(updateUser)
+    .delete(deleteUser);
 
 module.exports = router
