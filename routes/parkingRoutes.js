@@ -11,7 +11,8 @@ const router = express.Router();
 
 router.route('/')
     .get(parkingsController.getAllParkings)
-    .post(parkingsController.checkRequiredParams, parkingsController.addParking);
+    //.post(parkingsController.checkRequiredParams, parkingsController.addParking);
+    .post(parkingsController.addParking);
 
 router.route('/:parkingId')
     .get(parkingsController.getParking)
