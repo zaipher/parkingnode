@@ -1,12 +1,12 @@
-const fs = require('fs');
+// const fs = require('fs');
 const Parking = require('../models/parkingModel');
 // const parkings = JSON.parse( 
 //     fs.readFileSync(`${__dirname}/../dev-data/parkings.json`)
 // );
 
-Date.prototype.toJSON = function () {
-    return this.getTime()
-   }
+// Date.prototype.toJSON = function () {
+//     return this.getTime()
+//    }
 
 // exports.checkRequiredParams = (req, res, next) => { 
 //     if (!req.body.parkingSlot || !req.body.startDate || !req.body.endDate) {
@@ -64,11 +64,11 @@ exports.addParking = (req, res) => {
     //     } else {
             res.status(201).json({
             status:'success',
-            requestedAt: req.requestTime,
-            results: newparking.length,
-            data: {
-                parkings: newparking
-            },
+            // requestedAt: req.requestTime,
+            // results: newparking.length,
+            // data: {
+            //     parkings: newparking
+            //},
         });
 //     }
 //     });
@@ -100,10 +100,10 @@ exports.updateParking = (req, res) => {
     // fs.writeFile(`${__dirname}/../dev-data/parkings.json`, JSON.stringify(parkings), err => {
             res.status(201).json({
             status:'success',
-            requestedAt: req.requestTime,
-            data: {
-                parkings: parkingToUpdate
-            },
+            // requestedAt: req.requestTime,
+            // data: {
+            //     parkings: parkingToUpdate
+            // },
         });
 //     });
  }
