@@ -4,8 +4,6 @@ const http = require('http');
 const url = require('url');
 const express = require('express');
 const morgan = require('morgan');
-//const replaceTemplate = require(`${__dirname}/modules/replaceTemplate`);
-//const AWS = require('aws-sdk');
 
 const parkingRouter = require(`${__dirname}/routes/parkingRoutes.js`);
 const userRouter = require(`${__dirname}/routes/userRoutes.js`);
@@ -13,21 +11,23 @@ const customerRouter = require(`${__dirname}/routes/customerRoutes.js`);
 
 //Middlware
 const app = express();
+
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
+// Middleware
 app.use(express.json()); // to support JSON-encoded bodies as middleware
+//app.use(morgan('dev'));
+app.use(express.static(`${__dirname}/public`));
+
+// Date.prototype.toJSON = function () {return this.getTime()}
+
 app.use((req, res, next) => {
     console.log('Logging time of execution');
     req.requestTime = new Date().toISOString();
     next();
 });
-app.use(morgan('dev'));
-
-Date.prototype.toJSON = function () {
-    return this.getTime()
-   }
-
-// const parkingsdata = fs.readFileSync(`${__dirname}/dev-data/parkings.json`, 'utf-8');
-// const usersdata = fs.readFileSync(`${__dirname}/dev-data/users.json`, 'utf-8');
-// const dataObj = JSON.parse(parkingsdata);
 
 // TODO: review this as data may be insecured
 app.get('/', (req, res) => { 
