@@ -101,7 +101,7 @@ exports.updateCustomer = (req, res) => {
 exports.deleteCustomer = (req, res) => {
     let id = req.params.customerId // Get the id from the request params
     const uId = Number(id.slice(3)); // Number of the parking ID 
-    const customerId = `PO-${Number(id.slice(3))}`; // Concatenate the PID with the parking ID
+    const customerId = `PC-${Number(id.slice(3))}`; // Concatenate the PID with the parking ID
     //console.log(uId); TODO:
 
     let customerIdToDelete = customers.find(item => item.customerId === id); // Find the data item with the given id

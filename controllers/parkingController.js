@@ -7,6 +7,16 @@ Date.prototype.toJSON = function () {
     return this.getTime()
    }
 
+exports.checkRequiredParams = (req, res, next) => { 
+    if (!req.body.parkingSlot || !req.body.startDate || !req.body.endDate) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Missing required parameters.',
+        });
+    }
+    next();
+};
+
 // Route handlers for the parkings
 exports.getAllParkings = (req, res) => { 
     res.status(200).json({
@@ -23,12 +33,7 @@ exports.getAllParkings = (req, res) => {
 exports.getParking = (req, res) => { 
     console.log(req.params);
     const parking = parkings.find(parking => parking.parkingId === req.params.parkingId);
-    if (!parking) {
-        return res.status(404).json({
-        status: 'error',
-        message: 'Parking not found'
-        });
-    } 
+     
     res.status(200).json({
         status: 'success',
         requestedAt: req.requestTime,
@@ -40,9 +45,7 @@ exports.getParking = (req, res) => {
 
 exports.addParking = (req, res) => { 
     const lastParkingId = parkings[parkings.length - 1].parkingId;
-    console.log(lastParkingId);
     const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
-    console.log(newparkingId);
     const newparking = Object.assign(
         { parkingId:newparkingId }, 
         req.body, 
