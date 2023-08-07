@@ -6,7 +6,7 @@ const express = require('express');
 const morgan = require('morgan');
 
 const parkingRouter = require(`${__dirname}/routes/parkingRoutes.js`);
-const userRouter = require(`${__dirname}/routes/userRoutes.js`);
+const ownerRouter = require(`${__dirname}/routes/ownerRoutes.js`);
 const customerRouter = require(`${__dirname}/routes/customerRoutes.js`);
 
 //Middlware
@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/api/v1/parking', parkingRouter);
-app.use('/api/v1/user', userRouter);
+app.use('/api/v1/owner', ownerRouter);
 app.use('/api/v1/customer', customerRouter);
 
 module.exports = app;

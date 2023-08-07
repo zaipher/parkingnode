@@ -95,8 +95,6 @@ exports.updateParking = (req, res) => {
             });
         } 
     const parkingToUpdate = Object.assign(parkings[index], req.body, {lastUpdate:new Date()}); // Create a new object with the data item with the given id and add lastupdate date/time
-    console.log(parking);
-    console.log(parkingToUpdate);
     fs.writeFile(`${__dirname}/../dev-data/parkings.json`, JSON.stringify(parkings), err => {
             res.status(201).json({
             status:'success',
