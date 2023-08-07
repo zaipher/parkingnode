@@ -49,6 +49,7 @@ exports.addParking = (req, res) => {
     const newparking = Object.assign(
         { parkingId:newparkingId }, 
         req.body, 
+        {status:"open"},
         {createdDate:new Date()}
         );
     parkings.push(newparking);

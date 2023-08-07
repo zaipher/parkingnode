@@ -5,6 +5,17 @@ const customers = JSON.parse(
 Date.prototype.toJSON = function () {
     return this.getTime()
    }
+
+exports.checkRequiredParams = (req, res, next) => { 
+    if (!req.body.password || !req.body.emailaddress || !req.body.name) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Missing required parameters.',
+        });
+    }
+    next();
+};
+
 exports.getAllCustomers = (req, res) => { 
     res.status(200).json({
         status:'success',

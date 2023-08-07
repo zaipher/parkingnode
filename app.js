@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const parkingRouter = require(`${__dirname}/routes/parkingRoutes.js`);
 const ownerRouter = require(`${__dirname}/routes/ownerRoutes.js`);
 const customerRouter = require(`${__dirname}/routes/customerRoutes.js`);
+const parkingSlotRouter = require(`${__dirname}/routes/parkingSlotRoutes.js`);
 
 //Middlware
 const app = express();
@@ -40,6 +41,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/parking', parkingRouter);
 app.use('/api/v1/owner', ownerRouter);
 app.use('/api/v1/customer', customerRouter);
+app.use('/api/v1/parkingslot', parkingSlotRouter);
 
 module.exports = app;
 
