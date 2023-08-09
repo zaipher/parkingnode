@@ -1,24 +1,9 @@
-// const fs = require('fs');
 const Parking = require('../models/parkingModel');
-// const parkings = JSON.parse( 
-//     fs.readFileSync(`${__dirname}/../dev-data/parkings.json`)
-// );
 
 // Date.prototype.toJSON = function () {
 //     return this.getTime()
 //    }
 
-// exports.checkRequiredParams = (req, res, next) => { 
-//     if (!req.body.parkingSlot || !req.body.startDate || !req.body.endDate) {
-//         return res.status(400).json({
-//             status: 'error',
-//             message: 'Missing required parameters.',
-//         });
-//     }
-//     next();
-// };
-
-// Route handlers for the parkings
 exports.getAllParkings = (req, res) => { 
     res.status(200).json({
         status:'success',
@@ -44,37 +29,37 @@ exports.getParking = (req, res) => {
     // });
 };
 
-exports.addParking = (req, res) => { 
-    // const lastParkingId = parkings[parkings.length - 1].parkingId;
-    // const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
-    // const newparking = Object.assign(
-    //     { parkingId:newparkingId }, 
-    //     req.body, 
-    //     {status:"open"},
-    //     {createdDate:new Date()}
-    //     );
-    // parkings.push(newparking);
-    // //console.log(parkings);
-    // fs.writeFile(`${__dirname}/../dev-data/parkings.json`, JSON.stringify(parkings), err => {
-    //     if (err) {
-    //         res.status(500).json({
-    //             status: 'error',
-    //             message: 'Failed to save parking data.',
-    //         });
-    //     } else {
-            res.status(201).json({
+exports.addParking = async (req, res) => { 
+    //try { 
+
+    // const newParking = new Parking({});
+    // newParking.save();
+    // let id = req.params.parkingId // Get the id from the request params
+    // const parkingId = `PID-${Number(id.slice(4))}`; // Concatenate the PID with the parking ID
+    //const parking = parkings.find(parking => parking.parkingId === req.params.parkingId);
+    const newParking = await Parking.create(req.body);
+        res.status(201).json({
             status:'success',
-            // requestedAt: req.requestTime,
+            requestedAt: req.requestTime,
             // results: newparking.length,
-            // data: {
-            //     parkings: newparking
-            //},
+            data: {
+                 parking: newParking
+            },
         });
-//     }
-//     });
-};
+    } 
+    // catch (err) {
+    //     res.status(500).json({
+    //         status: 'error',
+    //         message: 'Failed to save parking data.',
+    //     });
+    // }
+//};
 
 exports.updateParking = (req, res) => {
+    // const lastParkingId = parkings[parkings.length - 1].parkingId;
+    // const newparkingId = `PID-${Number(lastParkingId.slice(4)) + 1}`;
+
+
     // let id = req.params.parkingId // Get the id from the request params
     // const pId = Number(id.slice(4)); // Number of the parking ID 
     // const parkingId = `PID-${Number(id.slice(4))}`; // Concatenate the PID with the parking ID

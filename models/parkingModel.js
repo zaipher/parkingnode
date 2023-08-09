@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
 const parkingSchema = new mongoose.Schema({
-    parkingId: {type: String,unique: true},
+    _Id: {type: String,unique: true},
+    //parkingId: {type: String,unique: true},
     parkingSlot: {type: String,required: true},
     parkingGarage: { type: String,required: true},
     flatRate: {type: Number,required: true},
-    succeedingHours: {type: Number,required: true},
-    startDate: {type: Date},
-    endDate: {type: Date},
+    succeedingHour: {type: Number,required: true},
+    startDate: {type: Date,required: true},
+    endDate: {type: Date,required: true},
     createdAt: {type: Date,default: Date.now},
     updatedAt: {type: Date,default: Date.now},
     status: String,
