@@ -1,15 +1,14 @@
 
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config({path:`${__dirname}/config/config.env`});
 //console.log(process.env); 
 const app = require('./app');
 
-const parkingDB = process.env.PARKINGS_DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
-mongoose
-  .connect(parkingDB, { 
-    useNewUrlParser: true
-  }).then(con => console.log('Connected to database'));
+// const parkingDB = process.env.PARKINGS_DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
+// mongoose
+//   .connect(parkingDB, { 
+//     useNewUrlParser: true
+//   }).then(con => console.log('Connected to database'));
 
 // Test adding a new parking document
 // const testParking = new Parking({ // instance of the Parking Model
@@ -38,6 +37,6 @@ mongoose
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`)
+    console.log(`Server running on port ${port}`);
 });
 
