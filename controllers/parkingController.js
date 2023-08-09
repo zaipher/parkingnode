@@ -41,6 +41,7 @@ exports.addParking = (req, res) => {
         {status:"open"},
         {createdDate:new Date()}
         );
+        
     parkings.push(newparking);
     //console.log(parkings);
     fs.writeFile(`${__dirname}/../dev-data/parkings.json`, JSON.stringify(parkings), err => {
